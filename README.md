@@ -64,6 +64,16 @@ some random text.
 
 You can find the solutions [right here](./solutions.md).
 
+## Uninstall
+
+To remove everything you can use, the `--purge` flag will delete the
+`.minikube` folder from your user directory with caches and other
+stuff:
+```bash
+minikube delete --purge=true
+```
+You can then remove minikube if you prefer!
+
 ## License
 
 [Apache License 2.0](./LICENSE)
