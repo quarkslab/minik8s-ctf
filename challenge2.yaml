@@ -1,0 +1,108 @@
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! #
+#  ____  ____   ___ ___ _     _____ ____        _    _     _____ ____ _____  #
+# / ___||  _ \ / _ \_ _| |   | ____|  _ \      / \  | |   | ____|  _ \_   _| #
+# \___ \| |_) | | | | || |   |  _| | |_) |    / _ \ | |   |  _| | |_) || |   #
+#  ___) |  __/| |_| | || |___| |___|  _ <    / ___ \| |___| |___|  _ < | |   #
+# |____/|_|    \___/___|_____|_____|_| \_\  /_/   \_\_____|_____|_| \_\|_|   #
+#                                                                            #
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! #
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  # namespace: default
+  name: operator-role
+  labels:
+    ctf: step2
+rules:
+- apiGroups: [""] 
+  resources: ["pods"]
+  verbs: ["create", "get", "watch", "list"]
+- apiGroups: [""] 
+  resources: ["pods/log"]
+  verbs: ["get"]
+- apiGroups: [""] 
+  resources: ["pods/exec"]
+  verbs: ["create"]
+- apiGroups: [""] 
+  resources: ["pods/attach"]
+  verbs: ["create"]
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  # namespace: default
+  name: operator
+  labels:
+    ctf: step2
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  # namespace: default
+  name: operator-binding
+  labels:
+    ctf: step2
+subjects:
+- kind: ServiceAccount
+  name: operator
+  # namespace: default
+roleRef:
+  kind: Role
+  name: operator-role
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: operator-rce
+  labels:
+    ctf: step2
+    app: rce-step2
+spec:
+  terminationGracePeriodSeconds: 0
+  serviceAccountName: operator
+  containers:
+    - name: yeah
+      image: mtardy/koolbox
+      command:
+        - /bin/bash
+      args:
+        - "-c"
+        - "echo \"cat /root/.scripts/script.txt\" >> /root/.profile;
+          sleep infinity"
+      volumeMounts:
+        - mountPath: "/root/.scripts"
+          name: script
+          readOnly: true
+  volumes:
+    - name: script
+      configMap:
+        name: scripts   
+        items:
+          - key: "script2"
+            path: "script.txt"
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: operator-init
+spec:
+  template:
+    spec:
+      containers:
+      - image: busybox
+        command:
+          - /bin/sh
+        args:
+          - "-c"
+          - "$(: please look away, the flag is just here base64 encoded but you should not find it by looking here)
+          echo cXVhcmtzZmxhZ3tUYUh1cXlOMnlWaDl2ZUtFMlZjbVV3fQo= | base64 -d > /rootfs/root/my-little-secret.txt"
+        name: busybox
+        volumeMounts:
+        - mountPath: /rootfs
+          name: rootfs
+      restartPolicy: Never
+      volumes:
+        - name: rootfs
+          hostPath:
+            path: /

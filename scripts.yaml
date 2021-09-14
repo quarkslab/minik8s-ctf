@@ -1,0 +1,30 @@
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! #
+#  ____  ____   ___ ___ _     _____ ____        _    _     _____ ____ _____  #
+# / ___||  _ \ / _ \_ _| |   | ____|  _ \      / \  | |   | ____|  _ \_   _| #
+# \___ \| |_) | | | | || |   |  _| | |_) |    / _ \ | |   |  _| | |_) || |   #
+#  ___) |  __/| |_| | || |___| |___|  _ <    / ___ \| |___| |___|  _ < | |   #
+# |____/|_|    \___/___|_____|_____|_| \_\  /_/   \_\_____|_____|_| \_\|_|   #
+#                                                                            #
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! #
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: scripts 
+data:
+  script1: |
+    Welcome in challenge 1!
+    ---
+    You exploited a remote code execution vulnerability in a web a application and
+    you now have a reverse shell on the machine! Congratulation! It seems that the
+    web application was running in a container on Kubernetes... Maybe the cluster
+    is hosting other applications that may store secrets?? ƪ(ړײ)ƪ
+  script2: |
+    Welcome in challenge 2!
+    ---
+    Again, you gained access to a shell on the machine! Congratulation!! You got
+    into this system because you already know there is some precious piece of
+    information stored in the /root folder of the host machine. (っ▀¯▀)つ
+  script3: |
+    Welcome in challenge 3!
+    ---
+    Can't you please stop from accessing other's people shells? ᕙ(⇀‸↼‶)ᕗ

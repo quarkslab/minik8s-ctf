@@ -1,0 +1,48 @@
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! #
+#  ____  ____   ___ ___ _     _____ ____        _    _     _____ ____ _____  #
+# / ___||  _ \ / _ \_ _| |   | ____|  _ \      / \  | |   | ____|  _ \_   _| #
+# \___ \| |_) | | | | || |   |  _| | |_) |    / _ \ | |   |  _| | |_) || |   #
+#  ___) |  __/| |_| | || |___| |___|  _ <    / ___ \| |___| |___|  _ < | |   #
+# |____/|_|    \___/___|_____|_____|_| \_\  /_/   \_\_____|_____|_| \_\|_|   #
+#                                                                            #
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! #
+apiVersion: v1
+kind: Pod
+metadata:
+  name: normal-pod 
+  labels:
+    ctf: step3
+    app: rce-step3
+spec:
+  terminationGracePeriodSeconds: 0
+  shareProcessNamespace: true
+  containers:
+    - name: toolbox
+      image: mtardy/koolbox
+      command:
+        - /bin/bash
+      args:
+        - "-c"
+        - "echo \"cat /root/.scripts/script.txt\" >> /root/.profile;
+          sleep infinity"
+      volumeMounts:
+        - mountPath: "/root/.scripts"
+          name: script
+          readOnly: true
+    - name: elite
+      image: busybox
+      env:
+        - name: SUPER_SECRET
+          value: "quarksflag{xHOEBnHpPtilhwQ8BDtPiA}"
+      command:
+        - /bin/sh
+      args:
+        - "-c"
+        - "while true; do sleep 1337; done"
+  volumes:
+    - name: script
+      configMap:
+        name: scripts
+        items:
+          - key: "script3"
+            path: "script.txt"
