@@ -63,3 +63,7 @@ some random text.
 ## Solutions
 
 You can find the solutions [right here](./solutions.md).
+
+## License
+
+[Apache License 2.0](./LICENSE)
