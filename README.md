@@ -8,10 +8,10 @@ challenges.
 This challenge could potentially run on any Kubernetes infrastructure but is
 currently designed especially for the minikube virtual machine environment. You
 might spoil yourself by running it on a different setup than recommended. You
-don't need any extra cloud account to run the challenge, it runs on Linux x86
+don't need any extra cloud account to run the challenge. It runs on Linux x86
 hosts directly by creating a virtual machine for isolation. If you don't trust
 the installation and you don't want to read all the challenges content, rent a
-dedicated server to run the VM or wait for the cloud version.
+dedicated server to run the VM or wait for a cloud version.
 
 **WARNING 1**: Do not start the challenge running Kubernetes in Docker (with
 kind for example), it's running in privileged containers a.k.a. root processes
@@ -48,7 +48,7 @@ $ ./setup_linux_x86.sh
 
 To start the challenges, just use the `start.sh` script with the step number
 you want to try, you can also read the script without getting too much
-information. You will then be given context information (or not?) of the
+information. You will then be given context information (or not?) for the
 challenge.
 ```bash
 $ ./start.sh <step number>
@@ -66,7 +66,7 @@ You can find the solutions [right here](./solutions.md).
 
 ## Uninstall
 
-To remove everything you can use, the `--purge` flag will delete the
+To remove everything, you can use, the `--purge` flag will delete the
 `.minikube` folder from your user directory with caches and other
 stuff:
 ```bash
