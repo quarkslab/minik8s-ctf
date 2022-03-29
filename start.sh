@@ -5,36 +5,32 @@ EXTRA_ARGS=""
 
 KUBECTL="minikube kubectl --"
 
+# if no args provided
 if [ -z "$1" ]; then
     echo -e $USAGE
     exit 1
 fi
 
+# if args different than 1, 2 or 3
+if [ $1 -lt 1 ] || [ $1 -gt 3 ]; then
+    echo -e $USAGE
+    exit 2
+fi
+
 minikube version >/dev/null 2>&1                                                 
 if [ $? -ne 0 ]; then                                                            
     echo "Minikube seems not to be installed, please make sure that setup was successful"
+    exit 3
 fi
 
-case $1 in
-    "1")
-        ;&
-    "2")
-        ;&
-    "3")
-        CHALL_POD_NAME=$($KUBECTL get pods -o name -l app=rce-step$1)
-        if [ -z $CHALL_POD_NAME ]; then
-            echo "Pod not found, please make sure that setup was successful"
-            exit 1
-        fi
-        if [ $1 -eq "3" ]; then
-            EXTRA_ARGS="-c toolbox"
-        fi
-        ;;
-    *)
-        echo -e $USAGE
-        exit 1
-        ;;
-esac
+CHALL_POD_NAME=$($KUBECTL get pods -o name -l app=rce-step$1)
+if [ -z $CHALL_POD_NAME ]; then
+    echo "Pod not found, please make sure that setup was successful"
+    exit 4
+fi
+if [ $1 -eq "3" ]; then
+    EXTRA_ARGS="-c toolbox"
+fi
 
 echo "Waiting for the pod to be ready, please wait..."
 echo "(It might take some time to download the container images)"
