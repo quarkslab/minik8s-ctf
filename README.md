@@ -36,9 +36,9 @@ Some basics requirements:
 
 And more importantly, a virtual machine driver installed like
 [Virtualbox](https://minikube.sigs.k8s.io/docs/drivers/virtualbox/) or
-[KVM](https://minikube.sigs.k8s.io/docs/drivers/kvm2/), later only for Linux of
-course. Please follow the links for the installation instruction for your
-distribution if you don't already installed one.
+[KVM](https://minikube.sigs.k8s.io/docs/drivers/kvm2/), the latter only for
+Linux of course. Please follow the links for the installation instruction
+for your distribution if you don't already installed one.
 
 Then you can just use the setup script that will propose to install minikube if
 not already present, setup the cluster and provision the challenges. You can
