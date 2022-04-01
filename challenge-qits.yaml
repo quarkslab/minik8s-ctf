@@ -1,0 +1,194 @@
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! #
+#  ____  ____   ___ ___ _     _____ ____        _    _     _____ ____ _____  #
+# / ___||  _ \ / _ \_ _| |   | ____|  _ \      / \  | |   | ____|  _ \_   _| #
+# \___ \| |_) | | | | || |   |  _| | |_) |    / _ \ | |   |  _| | |_) || |   #
+#  ___) |  __/| |_| | || |___| |___|  _ <    / ___ \| |___| |___|  _ < | |   #
+# |____/|_|    \___/___|_____|_____|_| \_\  /_/   \_\_____|_____|_| \_\|_|   #
+#                                                                            #
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! #
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  # namespace: default
+  name: operator-role
+  labels:
+    ctf: step1
+rules:
+- apiGroups: [""] 
+  resources: ["pods"]
+  verbs: ["create", "get", "watch", "list"]
+- apiGroups: [""]
+  resources: ["pods/log"]
+  verbs: ["get"]
+- apiGroups: [""]
+  resources: ["pods/exec"]
+  verbs: ["create"]
+- apiGroups: [""] 
+  resources: ["pods/attach"]
+  verbs: ["create"]
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  # namespace: default
+  name: operator
+  labels:
+    ctf: step1
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  # namespace: default
+  name: secure
+  labels:
+    ctf: step1
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  # namespace: default
+  name: operator-binding
+  labels:
+    ctf: step1
+subjects:
+- kind: ServiceAccount
+  name: operator
+  # namespace: default
+roleRef:
+  kind: Role
+  name: operator-role
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web-app
+  labels:
+    ctf: step1
+    app: rce-step1
+spec:
+  terminationGracePeriodSeconds: 0
+  serviceAccountName: operator
+  containers:
+    - name: webapp
+      image: mtardy/koolbox-user
+      command:
+        - /bin/bash
+      args:
+        - "-c"
+        - "echo \"cat /home/user/.scripts/script.txt\" >> /home/user/.profile;
+          sleep infinity"
+      volumeMounts:
+        - mountPath: "/home/user/.scripts"
+          name: script
+          readOnly: true
+  volumes:
+    - name: script
+      configMap:
+        name: scripts   
+        items:
+          - key: "script-qits"
+            path: "script.txt"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: sqlite
+  labels:
+    ctf: step1
+spec:
+  terminationGracePeriodSeconds: 0
+  containers:
+    - name: sqlite
+      image: bash:5.1.16
+      args:
+        - "sleep"
+        - "infinity"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hardened-web-app
+  namespace: secure
+  labels:
+    ctf: step1
+spec:
+  terminationGracePeriodSeconds: 0
+  containers:
+    - name: hardenedwebapp
+      image: bash:5.1.16
+      args:
+        - "sleep"
+        - "infinity"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mysql
+  namespace: secure
+  labels:
+    ctf: step1
+spec:
+  terminationGracePeriodSeconds: 0
+  containers:
+    - name: mysql
+      image: bash:5.1.16
+      args:
+        - "-c"
+        - "echo '+──────────────────────+─────────────────+──────────────────────────────────────+──────────────────────────────────────+\n
+| name                 | phone           | email                                | address                              |\n
++──────────────────────+─────────────────+──────────────────────────────────────+──────────────────────────────────────+\n
+| Arsenio Mosley       | (987) 261-6001  | vel.faucibus.id@icloud.org           | 396-665 Porta St.                    |\n
+| Liberty Barnes       | (222) 998-0251  | enim.sed.nulla@outlook.edu           | Ap #302-4108 Mattis. Rd.             |\n
+| Barry Hayden         | (946) 158-1359  | sodales.purus@protonmail.couk        | 9032 Sagittis Road                   |\n
+| Neil Dickson         | 1-433-230-3821  | faucibus.morbi.vehicula@hotmail.org  | 182-673 Et Rd.                       |\n
+| Chancellor Gonzales  | 1-722-566-5611  | nunc.mauris@icloud.couk              | 281-1643 Eget Street                 |\n
+| Abdul Peck           | 1-394-875-5034  | velit.egestas@protonmail.ca          | P.O. Box 337, 265 Ipsum St.          |\n
+| Mikayla Olson        | (316) 546-4525  | integer.in@yahoo.net                 | Ap #163-5580 Vitae Street            |\n
+| Wallace Walter       | 1-302-573-2685  | aenean.sed@protonmail.couk           | P.O. Box 120, 7930 Vestibulum. Road  |\n
+| Hilel Rivera         | 1-430-234-5995  | quam@aol.org                         | P.O. Box 685, 2687 Ante St.          |\n
+| Yvette Kaufman       | (685) 501-1496  | ut.ipsum@google.couk                 | Ap #451-4011 Maecenas Street         |\n
+| Molly Bradshaw       | (718) 249-8758  | et.magnis@hotmail.couk               | 129 Placerat St.                     |\n
+| Myra Armstrong       | (262) 765-4764  | congue.in@yahoo.ca                   | 919-4466 Placerat, Road              |\n
+| Alexandra Stark      | (692) 335-7107  | curabitur@icloud.org                 | P.O. Box 259, 1632 Blandit. Rd.      |\n
+| Zeph Robinson        | 1-392-602-7930  | a.feugiat.tellus@icloud.ca           | 6581 Et Street                       |\n
+| Chaney Mccarthy      | (454) 191-1936  | mollis.non@google.org                | 405-3576 Eu, Rd.                     |\n
+| Maile Kinney         | (443) 532-3282  | tempor@yahoo.ca                      | 795-9028 Felis Road                  |\n
+| Aphrodite Watson     | 1-665-555-4258  | augue@yahoo.couk                     | 987-2959 Magna. St.                  |\n
+| Emery Lucas          | 1-874-472-3333  | molestie.in@hotmail.com              | 230-2415 Metus. St.                  |\n
+| Grant Martin         | 1-577-731-8355  | cursus.vestibulum.mauris@outlook.com | Ap #812-293 Praesent Street          |\n
+| Patricia Peters      | (510) 219-4156  | augue@aol.edu                        | P.O. Box 126, 6555 Libero. Street    |\n
+| Coby Hart            | (956) 869-1294  | diam.lorem@yahoo.com                 | Ap #574-5647 Odio. Ave               |\n
+| Justin Wade          | (649) 373-8688  | et@aol.org                           | P.O. Box 605, 9293 Rhoncus Road      |\n
+| Olivia Rosario       | (665) 605-6365  | enim@protonmail.ca                   | 485-3937 Lacus St.                   |\n
+| Reuben Ballard       | 1-578-562-6052  | amet.consectetuer@google.edu         | Ap #611-8248 Ipsum St.               |\n
+| Candice Pate         | 1-358-987-8492  | purus.maecenas@aol.org               | 7256 Est, Rd.                        |\n
+| Charissa Forbes      | 1-505-882-0522  | egestas.blandit@aol.couk             | Ap #179-4168 Mauris Street           |\n
+| Hammett Velez        | 1-280-526-1142  | erat.nonummy@outlook.net             | 5584 Scelerisque Rd.                 |\n
+| Kaitlin Hickman      | (746) 664-7973  | augue@icloud.edu                     | 826-2342 Venenatis Street            |\n
+| Eagan Key            | 1-421-116-3475  | dolor@google.org                     | 9827 Interdum St.                    |\n
+| Ava Monroe           | (341) 714-7224  | neque.sed@icloud.com                 | 151-1016 Diam Road                   |\n
+| Allen Russo          | 1-451-885-7155  | vestibulum.ut@google.couk            | 824-134 Pharetra Av.                 |\n
+| Steven Pacheco       | 1-562-222-6865  | fusce.dolor@yahoo.couk               | P.O. Box 938, 151 Erat Ave           |\n
+| Cody Duffy           | 1-380-344-3882  | enim.commodo.hendrerit@outlook.net   | 9266 Nec, Road                       |\n
+| Dacey Delgado        | (451) 626-1748  | pede@hotmail.net                     | 335-6255 Tellus, St.                 |\n
+| Jamal Pena           | (350) 576-1316  | urna@protonmail.org                  | 4730 Nulla Rd.                       |\n
+| Myles Delaney        | (778) 775-5373  | cras.lorem.lorem@outlook.net         | P.O. Box 419, 5245 Non Rd.           |\n
+| Erin Campbell        | (616) 383-3432  | non.cursus@aol.org                   | 199-6638 Dolor Av.                   |\n
+| Kamal Mann           | 1-173-823-4266  | mi.fringilla.mi@yahoo.edu            | 982-5697 Volutpat Road               |\n
+| Larissa Love         | (525) 262-5788  | vitae@outlook.edu                    | P.O. Box 203, 3187 Nostra, Av.       |\n
+| Justine Lancaster    | 1-544-350-4108  | lorem.ac@protonmail.net              | 8641 Duis Rd.                        |\n
+| Jessamine Cameron    | 1-728-395-2273  | neque.sed.eget@outlook.com           | P.O. Box 199, 5993 Sit St.           |\n
+| Fredericka Chapman   | 1-422-863-9561  | in.mi@protonmail.org                 | 288-5296 Pharetra Road               |\n
+| Erica Blackwell      | 1-269-416-2877  | neque.nullam.ut@yahoo.ca             | 933-6754 Nisi. Rd.                   |\n
+| Lyle Patrick         | (425) 338-0715  | elit@hotmail.couk                    | Ap #307-843 Integer Ave              |\n
+| Hu Neal              | (817) 664-3743  | dui.fusce@hotmail.org                | 809-8367 Orci Rd.                    |\n
+| Ruby Knight          | (858) 274-7651  | nulla@outlook.org                    | Ap #211-1662 Vel Avenue              |\n
+| Kaitlin Trevino      | (783) 253-8558  | suspendisse@hotmail.couk             | 374-4048 Auctor St.                  |\n
++──────────────────────+─────────────────+──────────────────────────────────────+──────────────────────────────────────+\n' > /mnt/database/very-confidential.db; sleep infinity"
+      volumeMounts:
+        - mountPath: "/mnt/database"
+          name: database
+  volumes:
+    - name: database
+      emptyDir: {}

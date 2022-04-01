@@ -47,6 +47,13 @@ read the whole bash script without spoiling some challenge information.
 $ ./setup.sh
 ```
 
+To go further, you can also deploy a specific challenge that I used at [Quarks
+In The Shell](https://content.quarkslab.com/event-quarks-in-the-shell),
+Quarkslab's annual conference, by selecting via this environment variable.
+```bash
+$ CHALLENGE=qits ./setup.sh
+```
+
 ## Usage
 
 To start the challenges, just use the `start.sh` script with the step number
