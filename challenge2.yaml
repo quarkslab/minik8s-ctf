@@ -63,15 +63,15 @@ spec:
   serviceAccountName: operator
   containers:
     - name: yeah
-      image: mtardy/koolbox
+      image: mtardy/koolbox-user
       command:
         - /bin/bash
       args:
         - "-c"
-        - "echo \"cat /root/.scripts/script.txt\" >> /root/.profile;
+        - "echo \"cat /home/user/.scripts/script.txt\" >> /home/user/.profile;
           sleep infinity"
       volumeMounts:
-        - mountPath: "/root/.scripts"
+        - mountPath: "/home/user/.scripts"
           name: script
           readOnly: true
   volumes:
