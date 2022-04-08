@@ -28,3 +28,8 @@ data:
     Welcome in challenge 3!
     ---
     Can't you please stop from accessing other's people shells? ᕙ(⇀‸↼‶)ᕗ
+  script-qits: |
+    Welcome on the reverse shell of the exploited vulnerable web app!
+    ---
+    What if it was possible to reach the secured data of the hardened internal
+    web app database?

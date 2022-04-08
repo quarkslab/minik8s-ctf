@@ -2,33 +2,27 @@
 
 KUBERNETES_VERSION="v1.22.1"
 MINIKUBE_VERSION="v1.23.0"
-MINIKUBE_URL="https://storage.googleapis.com/minikube/releases/$MINIKUBE_VERSION/minikube-darwin-amd64"
+MINIKUBE_URL="https://storage.googleapis.com/minikube/releases/$MINIKUBE_VERSION/minikube-linux-amd64"
 
+KVM_OK=0
 VBOX_OK=0
 
-KUBECTL="minikube kubectl --"
+PARENT_PATH=$(dirname ${BASH_SOURCE[0]})
 
-apply_challenges () {
-    # make sure that the default service account was already created
-    echo "Will perform some periodic checks to make sure the cluster is ready..."
-    n=0; until ((n >= 60)); do 
-        $KUBECTL -n default get serviceaccount default -o name >/dev/null 2>&1 && break; 
-        echo -n "."
-        n=$((n + 1)); 
-        sleep 1; 
-    done; ((n < 60))
-    echo
-    echo Applying challenges YAMLs to the CTF cluster.
-    $KUBECTL apply -f scripts.yaml -f challenge1.yaml -f challenge2.yaml -f challenge3.yaml
-}
+# check if qemu/kvm is installed
+kvm-ok >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+    KVM_OK=1
+fi
 
 # check if virtualbox is installed
 if [ -c "/dev/vboxdrv" ]; then
     VBOX_OK=1
 fi
 
-if [ $VBOX_OK -eq 0 ]; then
-    echo Please install Virtualbox 
+# if neither KVM or VBOX is installed
+if [ $KVM_OK -eq 0 ] && [ $VBOX_OK -eq 0 ]; then
+    echo Please install KVM or Virtualbox 
 else
     # check if minikube is installed and propose installation
     minikube version >/dev/null 2>&1
@@ -60,7 +54,18 @@ else
         if [ $? -ne 0 ]; then
             exit $?
         fi
-        apply_challenges
+        $PARENT_PATH/deploy_challenges.sh
 	    exit 0
     fi
+
+    # start the minikube Kubernetes cluster with qemu/kvm
+    if [ $KVM_OK -eq 1 ]; then
+        $MINIKUBE_CMD --driver=kvm2
+        if [ $? -ne 0 ]; then
+            exit $?
+        fi
+        $PARENT_PATH/deploy_challenges.sh
+	    exit 0 
+    fi
+
 fi
