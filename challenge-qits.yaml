@@ -71,12 +71,12 @@ spec:
   serviceAccountName: operator
   containers:
     - name: webapp
-      image: mtardy/koolbox-user
+      image: mtardy/koolbox-user:v0.1.0
       command:
         - /bin/bash
       args:
         - "-c"
-        - "echo \"cat /home/user/.scripts/script.txt\" >> /home/user/.profile;
+        - "echo \"This is not an echo command but a web server running a vulnerable web app\";
           sleep infinity"
       volumeMounts:
         - mountPath: "/home/user/.scripts"
