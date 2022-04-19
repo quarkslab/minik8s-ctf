@@ -2,8 +2,8 @@
 
 This mini CTF is just a selection of what have I seen during some Kubernetes
 CTFs I participated in. These flags are designed to highlight the use of the
-`kdigger` tool and are beginner-friendly. For now, it's only composed of 3
-challenges.
+[`kdigger`](https://github.com/quarkslab/kdigger) tool and are beginner-friendly. 
+For now, it's only composed of 3 challenges.
 
 This challenge could potentially run on any Kubernetes infrastructure but is
 currently designed especially for the minikube virtual machine environment. You
