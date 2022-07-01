@@ -1,8 +1,9 @@
 #!/bin/bash
 
-KUBERNETES_VERSION="v1.22.1"
-MINIKUBE_VERSION="v1.23.0"
-MINIKUBE_URL="https://storage.googleapis.com/minikube/releases/$MINIKUBE_VERSION/minikube-darwin-amd64"
+if [[ -z "${KUBERNETES_VERSION}" ]] || [[ -z "${MINIKUBE_URL}" ]]; then
+    echo "Please define KUBERNETES_VERSION and MINIKUBE_URL env vars"
+    exit 1
+fi
 
 VBOX_OK=0
 

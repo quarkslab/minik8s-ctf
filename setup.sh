@@ -7,6 +7,10 @@ if [ $(uname -m) != "x86_64" ]; then
     exit 1
 fi
 
+export KUBERNETES_VERSION="v1.22.1"
+MINIKUBE_VERSION="v1.23.0"
+export MINIKUBE_URL="https://storage.googleapis.com/minikube/releases/$MINIKUBE_VERSION/minikube-linux-amd64"
+
 case $(uname) in
     "Linux")
         echo "Starting setup for Linux x86."
