@@ -36,7 +36,7 @@ spec:
   terminationGracePeriodSeconds: 0
   containers:
     - name: toolbox
-      image: mtardy/koolbox
+      image: mtardy/koolbox:v0.1.6
       command:
         - /bin/bash
       args:

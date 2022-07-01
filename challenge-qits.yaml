@@ -71,7 +71,7 @@ spec:
   serviceAccountName: operator
   containers:
     - name: webapp
-      image: mtardy/koolbox-user:v0.1.0
+      image: mtardy/koolbox-user:v0.1.2
       command:
         - /bin/bash
       args:
