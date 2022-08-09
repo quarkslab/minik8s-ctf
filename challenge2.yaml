@@ -63,7 +63,7 @@ spec:
   serviceAccountName: operator
   containers:
     - name: yeah
-      image: mtardy/koolbox-user:v0.1.2
+      image: mtardy/koolbox-user:v0.1.3
       command:
         - /bin/bash
       args:

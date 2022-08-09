@@ -18,7 +18,7 @@ spec:
   shareProcessNamespace: true
   containers:
     - name: toolbox
-      image: mtardy/koolbox:v0.1.6
+      image: mtardy/koolbox:v0.1.7
       command:
         - /bin/bash
       args:
